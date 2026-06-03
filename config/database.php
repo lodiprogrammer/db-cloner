@@ -52,6 +52,48 @@ return [
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
         ],
+        'source_MS' => [
+            'driver' => 'mysql',
+            'host' => env('SOURCE_DB_MS_HOST'),
+            'port' => env('SOURCE_DB_MS_PORT'),
+            'database' => env('SOURCE_DB_MS_DATABASE'),
+            'username' => env('SOURCE_DB_MS_USERNAME'),
+            'password' => env('SOURCE_DB_MS_PASSWORD'),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+        ],
+
+        'target_MS' => [
+            'driver' => 'mysql',
+            'host' => env('TARGET_DB_MS_HOST'),
+            'port' => env('TARGET_DB_MS_PORT'),
+            'database' => env('TARGET_DB_MS_DATABASE'),
+            'username' => env('TARGET_DB_MS_USERNAME'),
+            'password' => env('TARGET_DB_MS_PASSWORD'),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+        ],
+        'source_ACC' => [
+            'driver' => 'mysql',
+            'host' => env('SOURCE_DB_ACC_HOST'),
+            'port' => env('SOURCE_DB_ACC_PORT'),
+            'database' => env('SOURCE_DB_ACC_DATABASE'),
+            'username' => env('SOURCE_DB_ACC_USERNAME'),
+            'password' => env('SOURCE_DB_ACC_PASSWORD'),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+        ],
+
+        'target_ACC' => [
+            'driver' => 'mysql',
+            'host' => env('TARGET_DB_ACC_HOST'),
+            'port' => env('TARGET_DB_ACC_PORT'),
+            'database' => env('TARGET_DB_ACC_DATABASE'),
+            'username' => env('TARGET_DB_ACC_USERNAME'),
+            'password' => env('TARGET_DB_ACC_PASSWORD'),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+        ],
 
         'sqlite' => [
             'driver' => 'sqlite',

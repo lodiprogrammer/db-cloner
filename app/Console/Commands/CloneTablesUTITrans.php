@@ -16,7 +16,6 @@ class CloneTablesUTITrans extends Command
         $tables = [
             'purchase_orderdet' => 'id_detail',
             'sales_orderdet' => 'id',
-            'manual_item' => 'id',
             'mst_item_subsitute' => 'id',
             'invoice' => 'id',
             'sales_order' => 'id',
@@ -25,7 +24,6 @@ class CloneTablesUTITrans extends Command
             'purchase_invoice_copy' => 'id',
             'qo_history' => 'id',
             'ar_det' => 'id',
-            'sanco_audits' => 'id',
             'sales_orderdet_archive' => 'id',
             'outgoing_orderdet' => 'id',
             'quotation_detail' => 'id',
@@ -37,9 +35,9 @@ class CloneTablesUTITrans extends Command
             'kps_po_detail' => 'id',
             'kps_pembelian' => 'id',
             'journal_transaction' => 'id',
-            'purchase_billsdet' => 'id',
+            'purchase_billsdet' => 'id_detail',
             'kps_po' => 'id',
-            'incoming_order_detail' => 'id',
+            'incoming_order_detail' => 'id_detail',
             'packing_list' => 'id',
             'mst_location' => 'id',
             'purchase_proses' => 'id',
@@ -88,7 +86,7 @@ class CloneTablesUTITrans extends Command
             'kps_sales_order' => 'id',
             'sentra_delivery_orderdet_archive' => 'id',
             'sentra_sales_orderdet_archive' => 'id',
-            'kps_purchase_billsdet' => 'id',
+            'kps_purchase_billsdet' => 'id_detail',
             'sanco_sales_invoice_details' => 'id',
             'kps_ar_det_tenodji' => 'id',
             'ar' => 'id',
@@ -155,11 +153,10 @@ class CloneTablesUTITrans extends Command
             'slip_gaji_pajak_detail' => 'id',
             'kps_cbexpense_det' => 'id',
             'msg_journal_transaction' => 'id',
-            'audit' => 'id',
             'tmp_return_sales' => 'id',
             'kps_customer' => 'id',
             'kps_journal_transaction_tenodji' => 'id',
-            'kps_purchase_billsdet_tenodji' => 'id',
+            'kps_purchase_billsdet_tenodji' => 'id_detail',
             'kps_ar_tenodji' => 'id',
             'oslo_ar_det' => 'id',
             'sanco_customers' => 'id',
@@ -170,7 +167,7 @@ class CloneTablesUTITrans extends Command
             'sentra_delivery_order' => 'id',
             'oslo_retur_jual' => 'id',
             'aston_faktur_jual' => 'id',
-            'kps_purchase_billsdet_hanguk' => 'id',
+            'kps_purchase_billsdet_hanguk' => 'id_detail',
             'msg_faktur_jual' => 'id',
             'kps_numbering_sales_invoice' => 'id',
             'retursales_orderdet_doconsigment_history' => 'id',
@@ -238,7 +235,7 @@ class CloneTablesUTITrans extends Command
             'sanco_sales_return_details' => 'id',
             'item_assembly_det' => 'id',
             'inventory_unassembly' => 'id',
-            'jimshua_purchase_billsdet' => 'id',
+            'jimshua_purchase_billsdet' => 'id_detail',
             'unassembly' => 'id',
             'archive_oap' => 'id',
             'jimshua_sales_order_detail' => 'id',
@@ -259,7 +256,7 @@ class CloneTablesUTITrans extends Command
             'sentra_return_sales' => 'id',
             'menu_bck' => 'id',
             'sentra_purchase_order' => 'id',
-            'oslo_purchase_billsdet' => 'id',
+            'oslo_purchase_billsdet' => 'id_detail',
             'aston_retur_jual_detail' => 'id',
             'sanco_debit_note_customers' => 'id',
             'oslo_sales_order_detail' => 'id',
@@ -283,7 +280,7 @@ class CloneTablesUTITrans extends Command
             'msg_cbexpense_det' => 'id',
             'kps_purchase_order' => 'id',
             'sanco_account_payable_lovs' => 'id',
-            'aston_purchase_billsdet' => 'id',
+            'aston_purchase_billsdet' => 'id_detail',
             'kps_archive_journal_hanguk' => 'id',
             'oslo_pembelian' => 'id',
             'cbreceipt_det' => 'id',
@@ -486,7 +483,6 @@ class CloneTablesUTITrans extends Command
             'kps_credit_note' => 'id',
             'kps_ap_det_hanguk' => 'id',
             'mst_currency' => 'id',
-            'kps_audit_logs' => 'id',
             'assetdepreciation' => 'id',
             'msg_ap' => 'id',
             'aston_billingdet' => 'id',
@@ -674,7 +670,6 @@ class CloneTablesUTITrans extends Command
             'aston_journal_transaction' => 'id',
             'kps_expedition' => 'id',
             'tbl_logyec' => 'id',
-            'audit_logs' => 'id',
             'kps_billingdet_print' => 'id',
             'sentra_mst_sales' => 'id',
             'kps_approval_comments' => 'id',
@@ -726,10 +721,37 @@ class CloneTablesUTITrans extends Command
                 ->orderBy($primaryKey)
                 ->chunk(1000, function ($rows) use ($table, $primaryKey, $bar) {
 
+
+                    // Cek cache
+                    if (!isset($generatedColumnsCache[$table])) {
+                        $generatedColumnsCache[$table] = DB::connection('target')
+                            ->select("
+                                SELECT COLUMN_NAME 
+                                FROM INFORMATION_SCHEMA.COLUMNS 
+                                WHERE TABLE_SCHEMA = DATABASE() 
+                                AND TABLE_NAME = ? 
+                                AND EXTRA LIKE '%GENERATED%'
+                ", [$table]);
+                    }
+
+                    // Truncate table target sebelum insert (hanya sekali per tabel)
+                    static $truncated = [];
+                    if (!isset($truncated[$table])) {
+                        DB::connection('target')->table($table)->truncate();
+                        $truncated[$table] = true;
+                        $this->info("Truncated table: {$table}");
+                    }
+
+                    $generatedNames = collect($generatedColumnsCache[$table])->pluck('COLUMN_NAME')->toArray();
+
                     $data = collect($rows)
                         ->map(fn ($row) => (array) $row)
+                        ->map(function ($row) use ($generatedNames) {
+                            return array_diff_key($row, array_flip($generatedNames));
+                        })
                         ->toArray();
 
+                    DB::connection('target')->statement('SET FOREIGN_KEY_CHECKS=0');
                     DB::connection('target')
                         ->table($table)
                         ->upsert($data, [$primaryKey]);
