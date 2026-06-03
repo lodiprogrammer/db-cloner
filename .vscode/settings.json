@@ -1,0 +1,28 @@
+{
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#0cf896",
+    "activityBar.background": "#0cf896",
+    "activityBar.foreground": "#15202b",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#0814F7",
+    "activityBarBadge.foreground": "#15202b",
+    "commandCenter.border": "#15202b99",
+    "sash.hoverBorder": "#0cf896",
+    "statusBar.background": "#06cb79",
+    "statusBar.foreground": "#15202b",
+    "statusBarItem.hoverBackground": "#05995b",
+    "statusBarItem.remoteBackground": "#06cb79",
+    "statusBarItem.remoteForeground": "#15202b",
+    "titleBar.activeBackground": "#06cb79",
+    "titleBar.activeForeground": "#15202b",
+    "titleBar.inactiveBackground": "#06cb7999",
+    "titleBar.inactiveForeground": "#15202b99"
+  },
+  "editor.formatOnSave": true,
+  "[php]": {
+    "editor.defaultFormatter": "junstyle.php-cs-fixer"
+  },
+  "peacock.color": "#06CB79",
+  "CodeGPT.model": "text-davinci-003",
+  "CodeGPT.maxTokens": 500
+}
